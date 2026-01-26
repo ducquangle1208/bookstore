@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequestMapping("/api/books")
 public class BookController {
 
-    private BookService bookService;
+    private final BookService bookService;
 
     BookController(BookService bookService) {
         this.bookService = bookService;
