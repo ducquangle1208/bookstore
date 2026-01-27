@@ -6,6 +6,9 @@ import app.entities.Role;
 import app.entities.User;
 import app.repositories.RoleRepo;
 import app.repositories.UserRepo;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +20,13 @@ public class UserService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
+    private final AuthenticationManager authenticationManager;
 
-    UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
+    UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, AuthenticationManager authenticationManager) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
+        this.authenticationManager = authenticationManager;
     }
 
     public User registerUser(RegisterRequest request) {
@@ -39,16 +44,16 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public void loginUser(LoginRequest request) {
-        User user = userRepo.findByUsername(request.getUsername());
-        if (user == null) {
-            throw new RuntimeException("Bad Credentials");
-        }
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Bad Credentials");
+    public String loginUser(LoginRequest request) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        if (authentication.isAuthenticated()) {
+            return "Success";
         }
 
-
+        return "failure";
 
     }
 }

@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dto.LoginRequest;
 import app.dto.RegisterRequest;
 import app.dto.RegisterResponse;
 import app.entities.User;
@@ -31,6 +32,11 @@ public class UserController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return userService.loginUser(request);
     }
 
 }
