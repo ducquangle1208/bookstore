@@ -21,12 +21,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
     private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
-    UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, AuthenticationManager authenticationManager) {
+    UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, AuthenticationManager authenticationManager, JWTService jwtService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public User registerUser(RegisterRequest request) {
@@ -50,7 +52,7 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            return "Success";
+            return jwtService.generateToken(request.getUsername());
         }
 
         return "failure";
