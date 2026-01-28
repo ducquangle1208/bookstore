@@ -40,9 +40,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setName(request.getName());
-//        Role userRole = roleRepo.findByName("ROLE_USER");
-//        user.setRoles(Set.of(userRole));
-
+        Role userRole = roleRepo.findByName("ROLE_USER");
+        user.setRoles(Set.of(userRole));
         return userRepo.save(user);
     }
 

@@ -1,6 +1,9 @@
 package app.services;
 
 import app.config.JwtConfig;
+import app.entities.Role;
+import app.entities.User;
+import app.repositories.UserRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -15,15 +18,24 @@ import java.util.*;
 public class JWTService {
 
     private final JwtConfig jwtConfig;
+    private final UserRepo userRepo;
 
-    public JWTService(JwtConfig jwtConfig) {
+    public JWTService(JwtConfig jwtConfig, UserRepo userRepo) {
         this.jwtConfig = jwtConfig;
+        this.userRepo = userRepo;
     }
 
     public String generateToken(String username) {
 
+        User user = userRepo.findByUsername(username);
+
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
+
         return Jwts.builder()
                 .subject(username)
+                .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
                 .signWith(getKey(), Jwts.SIG.HS256)
@@ -37,7 +49,7 @@ public class JWTService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getKey()) // lấy signature
+                .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -61,6 +73,11 @@ public class JWTService {
 
         return username.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class);
     }
 
 }
