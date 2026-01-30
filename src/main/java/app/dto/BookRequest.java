@@ -1,10 +1,13 @@
 package app.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class BookRequest {
     private String title;
     private String author;

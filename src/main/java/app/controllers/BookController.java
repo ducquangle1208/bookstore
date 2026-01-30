@@ -3,6 +3,8 @@ package app.controllers;
 import app.dto.BookRequest;
 import app.entities.Book;
 import app.services.BookService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +44,12 @@ public class BookController {
     @GetMapping("/search")
     public List<Book> search(@RequestParam String title) {
         return bookService.search(title);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody BookRequest request) {
+        return ResponseEntity.ok(bookService.updateBook(id,request));
     }
 
 }

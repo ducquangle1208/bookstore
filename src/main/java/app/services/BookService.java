@@ -3,6 +3,7 @@ package app.services;
 import app.dto.BookRequest;
 import app.entities.Book;
 import app.repositories.BookRepo;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +46,15 @@ public class BookService {
 
     public void deleteBook(Long id) {
         bookRepo.deleteById(id);
+    }
+
+    public Book updateBook(Long id, BookRequest request) {
+        Book book = bookRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setPrice(request.getPrice());
+        return bookRepo.save(book);
     }
 
 }

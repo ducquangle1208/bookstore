@@ -10,4 +10,5 @@ import java.util.List;
 public interface BookRepo extends JpaRepository<Book, Long> {
     List<Book> findByTitleContaining(String title);
     boolean existsByTitle(String title);
+    Book findByTitle(String title);
 }
